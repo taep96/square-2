@@ -7,6 +7,7 @@ Nothing to see here yet.
 ## Code Quality
 
 - Add CI
+- Set up VSCode recommended extensions & settings
 - Use [`derive_more`](https://lib.rs/derive_more) and [`derive-new`](https://lib.rs/derive-new)
 - Use the built-in `macroquad::math` (`button.rs`)
 
