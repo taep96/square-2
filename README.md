@@ -2,11 +2,11 @@
 
 <!-- Badges -->
 
+[![CI][CI-badge]][CI]
 [![Code][MIT-badge]][MIT]
 [![Assets][CC-badge]][CC]
-[![CI][CI-badge]][CI]
-
-<!-- Project Description -->
+[![Sponsor][Sponsor-badge]][Sponsor]
+[![Discord][Discord-badge]][Discord]
 
 Nothing to see here yet.
 
@@ -36,9 +36,13 @@ This project uses a dual license:
 [CI]: https://github.com/taep96/square-2/actions
 [MIT]: LICENSE
 [CC]: LICENSE-ASSETS
+[Sponsor]: https://github.com/sponsors/taep96
+[Discord]: https://discord.gg/d9ZNNmmAwP
 
 <!-- Badges -->
 
 [CI-badge]: https://github.com/taep96/square-2/actions/workflows/ci.yml/badge.svg
 [MIT-badge]: https://img.shields.io/badge/code-MIT-green.svg
-[CC-badge]: https://img.shields.io/badge/assets-CC%20BY--NC--SA%204.0-lightgray.svg
+[CC-badge]: https://img.shields.io/badge/assets-CC%20BY--NC--SA%204.0-white.svg
+[Sponsor-badge]: https://img.shields.io/github/sponsors/taep96?label=Sponsor&logo=GitHub&color=pink
+[Discord-badge]: https://dcbadge.limes.pink/api/server/https://discord.gg/d9ZNNmmAwP?style=flat
