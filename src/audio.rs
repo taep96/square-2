@@ -2,14 +2,14 @@ use std::io::Cursor;
 
 use rodio::{Decoder, Sink, Source};
 
-const MENU_THEME: &'static [u8] = include_bytes!("../assets/bgm/menu.ogg");
-pub const GAME_THEMES: [&'static [u8]; 4] = [
+const MENU_THEME: &[u8] = include_bytes!("../assets/bgm/menu.ogg");
+pub const GAME_THEMES: [&[u8]; 4] = [
 	include_bytes!("../assets/bgm/game-a.ogg"),
 	include_bytes!("../assets/bgm/game-b.ogg"),
 	include_bytes!("../assets/bgm/game-c.ogg"),
 	include_bytes!("../assets/bgm/game-d.ogg"),
 ];
-const SFX: [&'static [u8]; 3] = [
+const SFX: [&[u8]; 3] = [
 	include_bytes!("../assets/sfx/button-click.wav"),
 	include_bytes!("../assets/sfx/shoot.wav"),
 	include_bytes!("../assets/sfx/hit.wav"),
@@ -33,6 +33,12 @@ pub struct AudioPlayer {
 	sfx_volume: f32,
 	_stream: rodio::OutputStream,
 	stream_handle: rodio::OutputStreamHandle,
+}
+
+impl Default for AudioPlayer {
+	fn default() -> Self {
+		Self::new()
+	}
 }
 
 impl AudioPlayer {

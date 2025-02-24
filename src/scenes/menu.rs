@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use crate::{
 	audio::{AudioPlayer, Effect, Theme},
@@ -10,11 +10,11 @@ use super::{Scene, SceneBehavior, Transition};
 
 pub struct Menu {
 	buttons: Vec<Button>,
-	audio_player: Arc<AudioPlayer>,
+	audio_player: Rc<AudioPlayer>,
 }
 
 impl Menu {
-	pub fn new(audio_player: Arc<AudioPlayer>) -> Self {
+	pub fn new(audio_player: Rc<AudioPlayer>) -> Self {
 		let play_button = Button::menu_button("PLAY", 40.0, || Some(Transition::ToGame));
 		let quit_button = Button::menu_button("QUIT", 52.0, || Some(Transition::Quit));
 

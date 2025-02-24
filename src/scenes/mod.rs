@@ -1,7 +1,7 @@
 mod game;
 mod menu;
 
-use std::sync::Arc;
+use std::rc::Rc;
 
 pub use self::game::Game;
 pub use self::menu::Menu;
@@ -47,14 +47,20 @@ pub trait Scene: SceneBehavior {
 /// Manages the current scene and handles transitions between scenes
 pub struct SceneManager {
 	current_scene: Box<dyn Scene>,
-	audio_player: Arc<AudioPlayer>,
+	audio_player: Rc<AudioPlayer>,
+}
+
+impl Default for SceneManager {
+	fn default() -> Self {
+		Self::new()
+	}
 }
 
 impl SceneManager {
 	pub fn new() -> Self {
-		let audio_player = Arc::new(AudioPlayer::new());
+		let audio_player = Rc::new(AudioPlayer::new());
 		Self {
-			current_scene: Box::new(Menu::new(Arc::clone(&audio_player))),
+			current_scene: Box::new(Menu::new(Rc::clone(&audio_player))),
 			audio_player,
 		}
 	}
@@ -68,11 +74,11 @@ impl SceneManager {
 				true
 			}
 			Transition::ToMenu => {
-				self.current_scene = Box::new(Menu::new(Arc::clone(&self.audio_player)));
+				self.current_scene = Box::new(Menu::new(Rc::clone(&self.audio_player)));
 				false
 			}
 			Transition::ToGame => {
-				self.current_scene = Box::new(Game::new(Arc::clone(&self.audio_player)));
+				self.current_scene = Box::new(Game::new(Rc::clone(&self.audio_player)));
 				false
 			}
 		}

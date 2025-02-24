@@ -1,15 +1,9 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
-use macroquad::{
-	color::*,
-	input::{is_key_down, KeyCode},
-	window::{clear_background, screen_height, screen_width},
-};
+use macroquad::prelude::*;
 
-use crate::{
-	audio::{AudioPlayer, Theme, GAME_THEMES},
-	entities::*,
-};
+use crate::audio::{AudioPlayer, Theme, GAME_THEMES};
+use crate::entities::{Bullet, Entity, Player, PlayerColor};
 
 use super::{Scene, SceneBehavior, Transition};
 
@@ -17,7 +11,7 @@ pub struct Game {
 	player1: Player,
 	player2: Player,
 	bullets: Vec<Bullet>,
-	audio_player: Arc<AudioPlayer>,
+	audio_player: Rc<AudioPlayer>,
 	last_theme: Option<usize>,
 }
 
@@ -25,10 +19,10 @@ const PLAYER1_SHOOT: KeyCode = KeyCode::E;
 const PLAYER2_SHOOT: KeyCode = KeyCode::RightControl;
 
 impl Game {
-	pub fn new(audio_player: Arc<AudioPlayer>) -> Self {
+	pub fn new(audio_player: Rc<AudioPlayer>) -> Self {
 		Self {
-			player1: Player::new(PlayerColor::Red, Arc::clone(&audio_player)),
-			player2: Player::new(PlayerColor::Blue, Arc::clone(&audio_player)),
+			player1: Player::new(PlayerColor::Red, Rc::clone(&audio_player)),
+			player2: Player::new(PlayerColor::Blue, Rc::clone(&audio_player)),
 			bullets: vec![],
 			audio_player,
 			last_theme: None,

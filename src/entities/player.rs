@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use macroquad::prelude::*;
 
@@ -27,11 +27,11 @@ pub struct Player {
 	pos: Vec2,
 	vel: Vec2,
 	shoot_cooldown: f32,
-	audio_player: Arc<AudioPlayer>,
+	audio_player: Rc<AudioPlayer>,
 }
 
 impl Player {
-	pub fn new(color: PlayerColor, audio_player: Arc<AudioPlayer>) -> Self {
+	pub fn new(color: PlayerColor, audio_player: Rc<AudioPlayer>) -> Self {
 		let x_start = match color {
 			PlayerColor::Red => 0.25,
 			PlayerColor::Blue => 0.75,
@@ -93,10 +93,10 @@ impl Player {
 
 	/// Get the rotation of the player **in degrees**
 	fn get_rotation(&self) -> f32 {
-		return match self.color {
+		(match self.color {
 			PlayerColor::Red => 1.0,
 			PlayerColor::Blue => -1.0,
-		} * (ROT_RATE * self.vel.y);
+		} * (ROT_RATE * self.vel.y))
 	}
 
 	/// generate a bullet with the player's color, position and initial velocity
@@ -115,7 +115,7 @@ impl Player {
 		self.audio_player.play_sfx(Effect::Shoot);
 
 		Some(Bullet::new(
-			self.color.clone(),
+			self.color,
 			self.pos,
 			bullet_vel,
 			BulletType::Regular,
