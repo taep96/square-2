@@ -1,23 +1,24 @@
-use std::f32::consts::PI;
-
 use macroquad::prelude::*;
+
+use crate::entities::*;
 
 use super::{Scene, SceneBehavior, Transition};
 
 pub struct Game {
-	player_pos: Vec2,
-	player_vel: Vec2,
-	player_speed: f32,
+	player1: Player,
+	player2: Player,
+	bullets: Vec<Bullet>,
 }
 
-const PLAYER_RADIUS: f32 = 40.0;
+const PLAYER1_SHOOT: KeyCode = KeyCode::E;
+const PLAYER2_SHOOT: KeyCode = KeyCode::RightControl;
 
 impl Game {
 	pub fn new() -> Self {
 		Self {
-			player_pos: Vec2::new(screen_width() / 2.0, screen_height() / 2.0),
-			player_vel: Vec2::new(0.0, 0.0),
-			player_speed: 0.2,
+			player1: Player::new(PlayerColor::Red),
+			player2: Player::new(PlayerColor::Blue),
+			bullets: vec![],
 		}
 	}
 }
@@ -30,64 +31,66 @@ impl Scene for Game {
 		if let Some(transition) = self.handle_common_input() {
 			return Some(transition);
 		}
+		self.player1.update();
+		self.player2.update();
 
-		let mut movement = Vec2::ZERO;
-
-		if is_key_down(KeyCode::W) || is_key_down(KeyCode::Up) {
-			movement.y -= 1.0;
-		}
-		if is_key_down(KeyCode::S) || is_key_down(KeyCode::Down) {
-			movement.y += 1.0;
-		}
-		if is_key_down(KeyCode::A) || is_key_down(KeyCode::Left) {
-			movement.x -= 1.0;
-		}
-		if is_key_down(KeyCode::D) || is_key_down(KeyCode::Right) {
-			movement.x += 1.0;
+		if self.player1.collider().unwrap()
+				.overlaps(&self.player2.collider().unwrap()) {
+			self.player1.on_player_hit(&mut self.player2);
 		}
 
-		if movement != Vec2::ZERO {
-			movement = movement.normalize();
-			self.player_vel += movement * self.player_speed;
+		if is_key_down(PLAYER1_SHOOT) {
+			if let Some(bullet) = self.player1.shoot() {
+				self.bullets.push(bullet);
+			}
 		}
-		self.player_pos += self.player_vel;
-		self.player_vel /= 1.05;
 
-		// Keep player within screen bounds, accounting for radius
-		self.player_pos.x = self
-			.player_pos
-			.x
-			.clamp(PLAYER_RADIUS, screen_width() - PLAYER_RADIUS);
-		self.player_pos.y = self
-			.player_pos
-			.y
-			.clamp(PLAYER_RADIUS, screen_height() - PLAYER_RADIUS);
+		if is_key_down(PLAYER2_SHOOT) {
+			if let Some(bullet) = self.player2.shoot() {
+				self.bullets.push(bullet);
+			}
+		}
 
+		for bullet in &mut self.bullets {
+			bullet.update();
+		}
+
+		// Remove bullets that are out of bounds, or hit a player
+		self.bullets.retain(|bullet| {
+			let pos = bullet.pos;
+			!bullet.destroy_flag && (
+				pos.x > 0.0 &&
+				pos.x < screen_width() &&
+				pos.y > 0.0 &&
+				pos.y < screen_height()
+			)
+		});
+
+		// Check for bullet collisions
+		for bullet in &mut self.bullets {
+			if bullet.color == PlayerColor::Blue &&
+					bullet.collider().unwrap().overlaps(&self.player1.collider().unwrap()) {
+				self.player1.on_bullet_hit(bullet);
+				bullet.destroy_flag = true;
+			}
+			else if bullet.color == PlayerColor::Red &&
+					bullet.collider().unwrap().overlaps(&self.player2.collider().unwrap()) {
+				self.player2.on_bullet_hit(bullet);
+				bullet.destroy_flag = true;
+			}
+		}
+		
 		None
 	}
 
 	fn render(&mut self) {
+		// TODO: background
 		clear_background(BLACK);
-		let rad = 7.0 * self.player_vel.y / 360.0;
-		draw_rectangle_ex(self.player_pos.x - 0.5f32.sqrt() * PLAYER_RADIUS * (rad + PI/4.0).cos(), self.player_pos.y - 0.5f32.sqrt() * PLAYER_RADIUS * (rad + PI/4.0).sin(), PLAYER_RADIUS, PLAYER_RADIUS, DrawRectangleParams {
-			color: RED,
-			rotation: rad,
-			..Default::default()
-		});
-		draw_rectangle_ex(self.player_pos.x + 5.0 * (rad).sin(), self.player_pos.y - 5.0 * (rad).cos(), 30.0, 10.0, DrawRectangleParams {
-			color: RED,
-			rotation: rad,
-			..Default::default()
-		});
-		draw_rectangle_ex(screen_width() - self.player_pos.x + 0.5f32.sqrt() * PLAYER_RADIUS * (rad + PI/4.0).cos(), self.player_pos.y - 0.5f32.sqrt() * PLAYER_RADIUS * (rad + PI/4.0).sin(), -PLAYER_RADIUS, PLAYER_RADIUS, DrawRectangleParams {
-			color: BLUE,
-			rotation: -rad,
-			..Default::default()
-		});
-		draw_rectangle_ex(screen_width() - self.player_pos.x + 5.0 * (rad).sin(), self.player_pos.y - 5.0 * (rad).cos(), -30.0, 10.0, DrawRectangleParams {
-			color: BLUE,
-			rotation: -rad,
-			..Default::default()
-		});
+		
+		self.player1.render();
+		self.player2.render();
+		for bullet in &self.bullets {
+			bullet.render();
+		}
 	}
 }
