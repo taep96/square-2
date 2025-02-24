@@ -101,11 +101,17 @@ impl Player {
 		let bullet_vel = (match self.color {
 			PlayerColor::Red => Vec2::new(rot.cos(), rot.sin()),
 			PlayerColor::Blue => Vec2::new(-rot.cos(), -rot.sin()),
-		}) * INITIAL_BULLET_VEL + self.vel;
+		}) * INITIAL_BULLET_VEL
+			+ self.vel;
 
 		self.shoot_cooldown = COOLDOWN;
 
-		Some(Bullet::new(self.color.clone(), self.pos, bullet_vel, BulletType::Regular))
+		Some(Bullet::new(
+			self.color.clone(),
+			self.pos,
+			bullet_vel,
+			BulletType::Regular,
+		))
 	}
 
 	fn collide_wall(&mut self) {
@@ -144,18 +150,18 @@ impl Entity for Player {
 			PlayerColor::Blue => BLUE,
 		};
 
-		
 		draw_poly(
 			self.pos.x,
 			self.pos.y,
 			4,
-			PLAYER_SIDE / 1.5, // slightly smaller than the collider
+			PLAYER_SIDE / 1.5,          // slightly smaller than the collider
 			self.get_rotation() + 45.0, // corner up by default
-			color
+			color,
 		);
 
 		let text_size = measure_text(&format!("{0}", self.lives), None, 10, 1.0);
-		let scale = (PLAYER_SIDE / text_size.width).min(PLAYER_SIDE / (text_size.height + text_size.offset_y));
+		let scale = (PLAYER_SIDE / text_size.width)
+			.min(PLAYER_SIDE / (text_size.height + text_size.offset_y));
 		draw_text(
 			&format!("{0}", self.lives),
 			self.pos.x - text_size.width / 2.0 * scale,

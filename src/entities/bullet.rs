@@ -6,7 +6,7 @@ const BULLET_RADIUS: f32 = 5.0;
 
 pub enum BulletType {
 	Regular,
-	Charged
+	Charged,
 }
 
 pub struct Bullet {
@@ -38,7 +38,7 @@ impl Bullet {
 
 impl Entity for Bullet {
 	fn collider(&self) -> Option<Rect> {
-		Some(Rect { 
+		Some(Rect {
 			x: self.pos.x - BULLET_RADIUS,
 			y: self.pos.y - BULLET_RADIUS,
 			w: 2.0 * BULLET_RADIUS,
@@ -47,10 +47,15 @@ impl Entity for Bullet {
 	}
 
 	fn render(&self) {
-		draw_circle(self.pos.x, self.pos.y, BULLET_RADIUS, match self.color {
-			PlayerColor::Red => RED,
-			PlayerColor::Blue => BLUE,
-		});
+		draw_circle(
+			self.pos.x,
+			self.pos.y,
+			BULLET_RADIUS,
+			match self.color {
+				PlayerColor::Red => RED,
+				PlayerColor::Blue => BLUE,
+			},
+		);
 
 		// debug
 		// let Rect { x, y, w, h } = self.collider().unwrap();

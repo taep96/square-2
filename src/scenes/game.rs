@@ -34,8 +34,12 @@ impl Scene for Game {
 		self.player1.update();
 		self.player2.update();
 
-		if self.player1.collider().unwrap()
-				.overlaps(&self.player2.collider().unwrap()) {
+		if self
+			.player1
+			.collider()
+			.unwrap()
+			.overlaps(&self.player2.collider().unwrap())
+		{
 			self.player1.on_player_hit(&mut self.player2);
 		}
 
@@ -58,35 +62,38 @@ impl Scene for Game {
 		// Remove bullets that are out of bounds, or hit a player
 		self.bullets.retain(|bullet| {
 			let pos = bullet.pos;
-			!bullet.destroy_flag && (
-				pos.x > 0.0 &&
-				pos.x < screen_width() &&
-				pos.y > 0.0 &&
-				pos.y < screen_height()
-			)
+			!bullet.destroy_flag
+				&& (pos.x > 0.0 && pos.x < screen_width() && pos.y > 0.0 && pos.y < screen_height())
 		});
 
 		// Check for bullet collisions
 		for bullet in &mut self.bullets {
-			if bullet.color == PlayerColor::Blue &&
-					bullet.collider().unwrap().overlaps(&self.player1.collider().unwrap()) {
+			if bullet.color == PlayerColor::Blue
+				&& bullet
+					.collider()
+					.unwrap()
+					.overlaps(&self.player1.collider().unwrap())
+			{
 				self.player1.on_bullet_hit(bullet);
 				bullet.destroy_flag = true;
-			}
-			else if bullet.color == PlayerColor::Red &&
-					bullet.collider().unwrap().overlaps(&self.player2.collider().unwrap()) {
+			} else if bullet.color == PlayerColor::Red
+				&& bullet
+					.collider()
+					.unwrap()
+					.overlaps(&self.player2.collider().unwrap())
+			{
 				self.player2.on_bullet_hit(bullet);
 				bullet.destroy_flag = true;
 			}
 		}
-		
+
 		None
 	}
 
 	fn render(&mut self) {
 		// TODO: background
 		clear_background(BLACK);
-		
+
 		self.player1.render();
 		self.player2.render();
 		for bullet in &self.bullets {
