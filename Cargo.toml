@@ -4,4 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+fastrand = "2.3.0"
 macroquad = "0.4.13"
+rodio = "0.20.1"

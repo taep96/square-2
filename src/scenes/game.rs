@@ -1,6 +1,15 @@
-use macroquad::prelude::*;
+use std::sync::Arc;
 
-use crate::entities::*;
+use macroquad::{
+	color::*,
+	input::{is_key_down, KeyCode},
+	window::{clear_background, screen_height, screen_width},
+};
+
+use crate::{
+	audio::{AudioPlayer, Theme, GAME_THEMES},
+	entities::*,
+};
 
 use super::{Scene, SceneBehavior, Transition};
 
@@ -8,17 +17,21 @@ pub struct Game {
 	player1: Player,
 	player2: Player,
 	bullets: Vec<Bullet>,
+	audio_player: Arc<AudioPlayer>,
+	last_theme: Option<usize>,
 }
 
 const PLAYER1_SHOOT: KeyCode = KeyCode::E;
 const PLAYER2_SHOOT: KeyCode = KeyCode::RightControl;
 
 impl Game {
-	pub fn new() -> Self {
+	pub fn new(audio_player: Arc<AudioPlayer>) -> Self {
 		Self {
-			player1: Player::new(PlayerColor::Red),
-			player2: Player::new(PlayerColor::Blue),
+			player1: Player::new(PlayerColor::Red, Arc::clone(&audio_player)),
+			player2: Player::new(PlayerColor::Blue, Arc::clone(&audio_player)),
 			bullets: vec![],
+			audio_player,
+			last_theme: None,
 		}
 	}
 }
@@ -31,6 +44,18 @@ impl Scene for Game {
 		if let Some(transition) = self.handle_common_input() {
 			return Some(transition);
 		}
+
+		if self.audio_player.done_bgm() {
+			let mut next_theme = fastrand::usize(..GAME_THEMES.len());
+			if let Some(last_theme) = self.last_theme {
+				if next_theme == last_theme {
+					next_theme = (next_theme + 1) % GAME_THEMES.len();
+				}
+			}
+			self.audio_player.queue_bgm(Theme::Game(next_theme));
+			self.last_theme = Some(next_theme);
+		}
+
 		self.player1.update();
 		self.player2.update();
 

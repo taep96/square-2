@@ -5,7 +5,7 @@ use square_2::scenes::SceneManager;
 async fn main() {
 	let mut scene_manager = SceneManager::new();
 
-	while !scene_manager.update() {
+	while !scene_manager.update().await {
 		scene_manager.render();
 		next_frame().await
 	}

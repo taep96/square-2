@@ -1,8 +1,12 @@
 mod game;
 mod menu;
 
+use std::sync::Arc;
+
 pub use self::game::Game;
 pub use self::menu::Menu;
+
+use super::audio::AudioPlayer;
 
 use macroquad::prelude::*;
 
@@ -43,25 +47,32 @@ pub trait Scene: SceneBehavior {
 /// Manages the current scene and handles transitions between scenes
 pub struct SceneManager {
 	current_scene: Box<dyn Scene>,
+	audio_player: Arc<AudioPlayer>,
 }
 
 impl SceneManager {
 	pub fn new() -> Self {
+		let audio_player = Arc::new(AudioPlayer::new());
 		Self {
-			current_scene: Box::new(Menu::new()),
+			current_scene: Box::new(Menu::new(Arc::clone(&audio_player))),
+			audio_player,
 		}
 	}
 
 	/// Process a scene transition
-	pub fn transition(&mut self, transition: Transition) -> bool {
+	pub async fn transition(&mut self, transition: Transition) -> bool {
+		self.audio_player.stop_bgm();
 		match transition {
-			Transition::Quit => true,
+			Transition::Quit => {
+				std::thread::sleep(std::time::Duration::from_millis(500));
+				true
+			}
 			Transition::ToMenu => {
-				self.current_scene = Box::new(Menu::new());
+				self.current_scene = Box::new(Menu::new(Arc::clone(&self.audio_player)));
 				false
 			}
 			Transition::ToGame => {
-				self.current_scene = Box::new(Game::new());
+				self.current_scene = Box::new(Game::new(Arc::clone(&self.audio_player)));
 				false
 			}
 		}
@@ -69,9 +80,9 @@ impl SceneManager {
 
 	/// Update the current scene
 	/// Returns true when it's time to quit, false otherwise
-	pub fn update(&mut self) -> bool {
+	pub async fn update(&mut self) -> bool {
 		if let Some(transition) = self.current_scene.update() {
-			self.transition(transition)
+			self.transition(transition).await
 		} else {
 			false
 		}

@@ -1,4 +1,8 @@
+use std::sync::Arc;
+
 use macroquad::prelude::*;
+
+use crate::audio::{AudioPlayer, Effect};
 
 use super::{bullet::BulletType, Bullet, Entity};
 
@@ -23,10 +27,11 @@ pub struct Player {
 	pos: Vec2,
 	vel: Vec2,
 	shoot_cooldown: f32,
+	audio_player: Arc<AudioPlayer>,
 }
 
 impl Player {
-	pub fn new(color: PlayerColor) -> Self {
+	pub fn new(color: PlayerColor, audio_player: Arc<AudioPlayer>) -> Self {
 		let x_start = match color {
 			PlayerColor::Red => 0.25,
 			PlayerColor::Blue => 0.75,
@@ -37,10 +42,12 @@ impl Player {
 			vel: Vec2::new(0.0, 0.0),
 			lives: PLAYER_LIVES,
 			shoot_cooldown: 0.0,
+			audio_player,
 		}
 	}
 
 	pub fn on_bullet_hit(&mut self, _: &Bullet) {
+		self.audio_player.play_sfx(Effect::Hit);
 		if self.lives != 0 {
 			self.lives -= 1;
 		}
@@ -105,6 +112,7 @@ impl Player {
 			+ self.vel;
 
 		self.shoot_cooldown = COOLDOWN;
+		self.audio_player.play_sfx(Effect::Shoot);
 
 		Some(Bullet::new(
 			self.color.clone(),
