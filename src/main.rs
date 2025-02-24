@@ -1,5 +1,5 @@
-use game::scenes::SceneManager;
 use macroquad::prelude::*;
+use square_2::scenes::SceneManager;
 
 #[macroquad::main("Square 2")]
 async fn main() {
