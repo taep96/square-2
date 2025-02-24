@@ -21,7 +21,6 @@ This project uses a dual license:
 
 ## Code Quality
 
-- Set up VSCode recommended extensions & settings
 - Use [`derive_more`](https://lib.rs/derive_more) and [`derive-new`](https://lib.rs/derive-new)
 - Use the built-in `macroquad::math` (`button.rs`)
 

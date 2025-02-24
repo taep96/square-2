@@ -1,0 +1,14 @@
+{
+	"recommendations": [
+		// Rust
+		"rust-lang.rust-analyzer",
+		"tamasfe.even-better-toml",
+		"fill-labs.dependi",
+		"vadimcn.vscode-lldb",
+
+		// Editor
+		"editorconfig.editorconfig",
+		"usernamehw.errorlens",
+		"gruntfuggly.todo-tree"
+	]
+}
