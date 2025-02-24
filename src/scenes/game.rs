@@ -1,19 +1,23 @@
+use std::f32::consts::PI;
+
 use macroquad::prelude::*;
 
 use super::{Scene, SceneBehavior, Transition};
 
 pub struct Game {
 	player_pos: Vec2,
+	player_vel: Vec2,
 	player_speed: f32,
 }
 
-const PLAYER_RADIUS: f32 = 20.0;
+const PLAYER_RADIUS: f32 = 40.0;
 
 impl Game {
 	pub fn new() -> Self {
 		Self {
 			player_pos: Vec2::new(screen_width() / 2.0, screen_height() / 2.0),
-			player_speed: 10.0,
+			player_vel: Vec2::new(0.0, 0.0),
+			player_speed: 0.2,
 		}
 	}
 }
@@ -44,8 +48,10 @@ impl Scene for Game {
 
 		if movement != Vec2::ZERO {
 			movement = movement.normalize();
-			self.player_pos += movement * self.player_speed;
+			self.player_vel += movement * self.player_speed;
 		}
+		self.player_pos += self.player_vel;
+		self.player_vel /= 1.05;
 
 		// Keep player within screen bounds, accounting for radius
 		self.player_pos.x = self
@@ -62,6 +68,26 @@ impl Scene for Game {
 
 	fn render(&mut self) {
 		clear_background(BLACK);
-		draw_circle(self.player_pos.x, self.player_pos.y, PLAYER_RADIUS, WHITE);
+		let rad = 7.0 * self.player_vel.y / 360.0;
+		draw_rectangle_ex(self.player_pos.x - 0.5f32.sqrt() * PLAYER_RADIUS * (rad + PI/4.0).cos(), self.player_pos.y - 0.5f32.sqrt() * PLAYER_RADIUS * (rad + PI/4.0).sin(), PLAYER_RADIUS, PLAYER_RADIUS, DrawRectangleParams {
+			color: RED,
+			rotation: rad,
+			..Default::default()
+		});
+		draw_rectangle_ex(self.player_pos.x + 5.0 * (rad).sin(), self.player_pos.y - 5.0 * (rad).cos(), 30.0, 10.0, DrawRectangleParams {
+			color: RED,
+			rotation: rad,
+			..Default::default()
+		});
+		draw_rectangle_ex(screen_width() - self.player_pos.x + 0.5f32.sqrt() * PLAYER_RADIUS * (rad + PI/4.0).cos(), self.player_pos.y - 0.5f32.sqrt() * PLAYER_RADIUS * (rad + PI/4.0).sin(), -PLAYER_RADIUS, PLAYER_RADIUS, DrawRectangleParams {
+			color: BLUE,
+			rotation: -rad,
+			..Default::default()
+		});
+		draw_rectangle_ex(screen_width() - self.player_pos.x + 5.0 * (rad).sin(), self.player_pos.y - 5.0 * (rad).cos(), -30.0, 10.0, DrawRectangleParams {
+			color: BLUE,
+			rotation: -rad,
+			..Default::default()
+		});
 	}
 }
