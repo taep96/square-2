@@ -4,6 +4,7 @@
 
 [![Code][MIT-badge]][MIT]
 [![Assets][CC-badge]][CC]
+[![CI][CI-badge]][CI]
 
 <!-- Project Description -->
 
@@ -20,7 +21,6 @@ This project uses a dual license:
 
 ## Code Quality
 
-- Add CI
 - Set up VSCode recommended extensions & settings
 - Use [`derive_more`](https://lib.rs/derive_more) and [`derive-new`](https://lib.rs/derive-new)
 - Use the built-in `macroquad::math` (`button.rs`)
@@ -33,7 +33,12 @@ This project uses a dual license:
 
 <!-- Links -->
 
+[CI]: https://github.com/taep96/square-2/actions
 [MIT]: LICENSE
 [CC]: LICENSE-ASSETS
+
+<!-- Badges -->
+
+[CI-badge]: https://github.com/taep96/square-2/actions/workflows/ci.yml/badge.svg
 [MIT-badge]: https://img.shields.io/badge/code-MIT-green.svg
 [CC-badge]: https://img.shields.io/badge/assets-CC%20BY--NC--SA%204.0-lightgray.svg
