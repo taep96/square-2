@@ -1,0 +1,33 @@
+name: CI
+
+on:
+   push:
+   pull_request:
+
+env:
+   CARGO_TERM_COLOR: always
+
+jobs:
+   check:
+      name: Check & Build
+      runs-on: ubuntu-latest
+      steps:
+         - name: Checkout Repository
+           uses: actions/checkout@v4
+
+         - name: Setup Rust Toolchain
+           uses: dtolnay/rust-toolchain@stable
+           with:
+              components: rustfmt, clippy
+
+         - name: Setup Dependency Caching
+           uses: Swatinem/rust-cache@v2
+
+         - name: Check Code Formatting
+           run: cargo fmt --all --check
+
+         - name: Check For Lints
+           run: cargo clippy -- --deny warnings
+
+         - name: Build Project
+           run: cargo build --verbose
