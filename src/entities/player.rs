@@ -57,6 +57,8 @@ impl Player {
 		let collision_normal = (self.pos - player.pos).normalize();
 		self.vel += collision_normal * BOUNCE_FORCE;
 		player.vel -= collision_normal * BOUNCE_FORCE;
+
+		self.audio_player.play_sfx(Effect::Collision);
 	}
 
 	fn acceleration_from_input(&self) -> Vec2 {
@@ -109,7 +111,10 @@ impl Player {
 			PlayerColor::Red => Vec2::new(rot.cos(), rot.sin()),
 			PlayerColor::Blue => Vec2::new(-rot.cos(), -rot.sin()),
 		}) * INITIAL_BULLET_VEL
-			+ self.vel;
+			+ Vec2 {
+				x: self.vel.x,
+				y: 0.0,
+			};
 
 		self.shoot_cooldown = COOLDOWN;
 		self.audio_player.play_sfx(Effect::Shoot);
@@ -127,18 +132,22 @@ impl Player {
 		if self.pos.x - half_side < 0.0 {
 			self.pos.x = half_side;
 			self.vel = Vec2::new(-self.vel.x, self.vel.y);
+			self.audio_player.play_sfx(Effect::Collision);
 		}
 		if self.pos.x + half_side > screen_width() {
 			self.pos.x = screen_width() - half_side;
 			self.vel = Vec2::new(-self.vel.x, self.vel.y);
+			self.audio_player.play_sfx(Effect::Collision);
 		}
 		if self.pos.y - half_side < 0.0 {
 			self.pos.y = half_side;
 			self.vel = Vec2::new(self.vel.x, -self.vel.y);
+			self.audio_player.play_sfx(Effect::Collision);
 		}
 		if self.pos.y + half_side > screen_height() {
 			self.pos.y = screen_height() - half_side;
 			self.vel = Vec2::new(self.vel.x, -self.vel.y);
+			self.audio_player.play_sfx(Effect::Collision);
 		}
 	}
 }

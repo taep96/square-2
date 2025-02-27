@@ -9,10 +9,11 @@ pub const GAME_THEMES: [&[u8]; 4] = [
 	include_bytes!("../assets/bgm/game-c.ogg"),
 	include_bytes!("../assets/bgm/game-d.ogg"),
 ];
-const SFX: [&[u8]; 3] = [
+const SFX: [&[u8]; 4] = [
 	include_bytes!("../assets/sfx/button-click.wav"),
 	include_bytes!("../assets/sfx/shoot.wav"),
 	include_bytes!("../assets/sfx/hit.wav"),
+	include_bytes!("../assets/sfx/collision.wav"),
 ];
 
 #[derive(PartialEq, Clone, Copy)]
@@ -26,6 +27,7 @@ pub enum Effect {
 	ButtonClick,
 	Shoot,
 	Hit,
+	Collision,
 }
 
 pub struct AudioPlayer {
@@ -84,6 +86,7 @@ impl AudioPlayer {
 			Effect::ButtonClick => SFX[0],
 			Effect::Shoot => SFX[1],
 			Effect::Hit => SFX[2],
+			Effect::Collision => SFX[3],
 		})
 	}
 
